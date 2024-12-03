@@ -2,28 +2,15 @@
 # Link: https://adventofcode.com/2024/day/1
 # The task is to calculate the sum of distances  of sorted list.
 
-import os
-from dotenv import load_dotenv
+from enum import unique
 from utils.logger import get_logger
-import requests
 import itertools
+from collections import Counter
 
-import numpy as np
 
 logger = get_logger(__name__)
 
 class HistorianHysteria:
-
-    @staticmethod
-    def get_problem_description(url, session_cookie):
-        headers = {"Cookie": f"session={session_cookie}"}
-        logger.info("HistorianHysteria.get_problem_description: Getting url request.")
-        response = requests.get(url=url, headers=headers)
-        
-        if response.status_code == 200:
-            logger.info("Access succesful")
-        else:
-            logger.warning(f"Access denied, status code {response.status_code}")
     
     @staticmethod
     def get_input(file_path):
@@ -48,24 +35,47 @@ class HistorianHysteria:
         
         return data1, data2
     @staticmethod
-    def total_distance(list1, list2):
-        list1.sort()
-        list2.sort()
+    def task1(list1, list2):
+        logger.info(f"HistorianHysteria.task1: start")
+        if list1 != sorted(list1):
+            list1.sort()
+        if list2 != sorted(list2):
+            list2.sort()
+        # Using a generator expression to sum the absolute differences directly
+        return sum(abs(x1 - x2) for (x1, x2) in itertools.zip_longest(list1, list2, fillvalue=0))
+    
+    @staticmethod
+    def task2(list1, list2):
+        logger.info(f"HistorianHysteria.task2: start")
+        output = []
 
-        output = [abs(x1 - x2) for (x1, x2) in itertools.zip_longest(list1, list2)]
-        return(sum(output))
+        # Initialize an empty set to track seen elements
+        seen = set()
+        # Create a Counter for list2 to count occurrences of each element
+        count_dict = Counter(list2)
+        # Generator expression to yield unique values from list1
+        # It checks if the element has already been seen by looking it up in the 'seen' set
+        # If not seen, it adds the element to the 'seen' set and yields the value
+        unique = (val for val in list1 if val not in seen and not seen.add(val))
+        for i in unique:
+            output.extend([i] * count_dict[i])
+        return sum(output)
+
+
+
+
 
 def main():
     # Initialize HistorianHysteria instance
     solver = HistorianHysteria()
 
     # Get directory path from environment variable
-    directory = 'input/data.txt'
-    list1, list2 = solver.get_input(directory)
-    print(solver.total_distance(list1, list2))
-
-
-
+    directory_task1 = 'input/task1.txt'
+    directory_task1 = 'input/task2.txt'
+    list1, list2 = solver.get_input(directory_task1)
+    task1 = solver.task1(list1, list2)
+    task2 = solver.task2(list1, list2)
+    logger.info(f"Answer for task1 is: {task1} and for task2 is: {task2}")
 
 
 
