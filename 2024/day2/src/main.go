@@ -113,5 +113,5 @@ func removeElementAt(arr []int, index int) []int {
 func main() {
 	// Choose the safety check method
 	BasicSafetyCheck()
-	// AdjustedSafetyCheck() // Uncomment this to use the adjustment logic
+	AdjustedSafetyCheck() // Uncomment this to use the adjustment logic
 }
